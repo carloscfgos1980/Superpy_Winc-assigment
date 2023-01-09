@@ -1,8 +1,8 @@
 # Imports
 import argparse
-import csv
+'''import csv'''  # I will use Pandas instead
 from datetime import date
-import pandas as pd
+import pandas as pd  # Easier way to import and work with .csv files
 import os
 
 # Do not change these lines.
@@ -14,37 +14,24 @@ __human_name__ = "superpy"
 def main():
     print('BOUGHT \n:', data_bought)
     print('SOLD \n:', data_sold)
-    print(data_bought.values[1][2])
-    print(data_sold.values[1][2])
-    print('ORANGE:\n', orange)
-    print('POTATO:\n', potato)
-    print('BANANA:\n', banana)
-    print('APPLE:\n', apple)
-    print('MEAT:\n', meat)
-    print(orange.total_sold())
-    print(orange.in_storage())
-    print('REVENUE FROM YESTREDAY BANANA SELLING:\n',
-          banana.revenue('yesterday'))
+    print(items_details('graves'))
+    print(items_details('orange').fresh_item())
 
 
-'''
-def bought_items():
-    outcome = []
-    with open('bought.csv', newline='') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            outcome.append(row)
-    return outcome
-'''
 path = os.getcwd()
 path_to_file_bought = os.path.join(path, "bought.csv")
 path_to_file_sold = os.path.join(path, "sold.csv")
 
+# Storing the data of the .csv files in variables
 data_bought = pd.read_csv(path_to_file_bought)
 data_sold = pd.read_csv(path_to_file_sold)
 
+# create a class to storage all the data from the csv
+
 
 class Product():
+    today = date.today()  # method to obtain the current day
+
     def __init__(self, item, amount, price, sell_price, sold_before_yesterday, sold_yesterday, sold_today, buy_date, expiration_date):
         self.item = item
         self.amount = amount
@@ -56,18 +43,22 @@ class Product():
         self.buy_date = buy_date
         self.expiration_date = expiration_date
 
+    # string that identify the item
     def __str__(self):
         return f"Item: {self.item}\nprice: {self.price}\namount: {self.amount} kgs\nsell price: {self.sell_price}\nsold before yesterday: {self.sold_before_yesterday}\nsold yesterday: {self.sold_yesterday}\nsold today: {self.sold_today}\nbuy date: {self.buy_date}\nexpiration date: {self.expiration_date}"
 
+    # subclass to calcultate amount of itemts(kgs) that been sold
     def total_sold(self):
         x = sum([self.sold_before_yesterday,
                 self.sold_yesterday, self.sold_today])
         return x
 
+    # Subclass inventory. What it remains in the storage
     def in_storage(self):
         y = self.amount - self.total_sold()
         return y
 
+    # Subclass Calculte revenue
     def revenue(self, date):
         if date == 'before_yesteday':
             cost = self.sold_before_yesterday * self.price
@@ -85,21 +76,37 @@ class Product():
             outcome = collected - cost
             return outcome
 
+    # Subclass Check if the product is still fresh
+    def fresh_item(self):
+        date1 = self.expiration_date
+        y1, m1, d1 = [int(x) for x in date1.split('-')]
+        expire_date = date(y1, m1, d1)
+        if expire_date > self.today:
+            delta = expire_date - self.today
+            return f'{self.item} is still fresh and it will expire in {delta.days} days'
+        else:
+            return f'{self.item} has expired'
 
-orange = Product(data_bought.values[0][1], data_bought.values[0][2], data_bought.values[0][3], data_sold.values[0][5],
-                 data_sold.values[0][2], data_sold.values[0][3], data_sold.values[0][4], data_bought.values[0][4], data_bought.values[0][5])
 
-potato = Product(data_bought.values[1][1], data_bought.values[1][2], data_bought.values[1][3], data_sold.values[1][5],
-                 data_sold.values[1][2], data_sold.values[1][3], data_sold.values[1][4], data_bought.values[1][4], data_bought.values[1][5])
+# From data_bought (csv), create a list with the elements in the row (items)
+items_list = []
+for index, row in data_bought.iterrows():
+    x = row["items"]
+    items_list.append(x)
 
-banana = Product(data_bought.values[2][1], data_bought.values[2][2], data_bought.values[2][3], data_sold.values[2][5],
-                 data_sold.values[2][2], data_sold.values[2][3], data_sold.values[2][4], data_bought.values[2][4], data_bought.values[2][5])
 
-apple = Product(data_bought.values[3][1], data_bought.values[3][2], data_bought.values[3][3], data_sold.values[3][5],
-                data_sold.values[3][2], data_sold.values[3][3], data_sold.values[3][4], data_bought.values[3][4], data_bought.values[3][5])
+# looping thru the list of items in order to dunamically pass arguments to the class Product
+def items_details(item):
+    if item in items_list:
+        for i in range(len(items_list)):
+            product = items_list[i]
+            if product == item:
+                product = Product(data_bought.values[i][1], data_bought.values[i][2], data_bought.values[i][3], data_sold.values[i][5],
+                                  data_sold.values[i][2], data_sold.values[i][3], data_sold.values[i][4], data_bought.values[i][4], data_bought.values[i][5])
+                return product
+    else:
+        return "this item is not in inventory"
 
-meat = Product(data_bought.values[4][1], data_bought.values[4][2], data_bought.values[4][3], data_sold.values[4][5],
-               data_sold.values[4][2], data_sold.values[4][3], data_sold.values[4][4], data_bought.values[4][4], data_bought.values[4][5])
 
 if __name__ == "__main__":
     main()
