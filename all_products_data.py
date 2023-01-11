@@ -10,7 +10,7 @@ path_to_file_sold = os.path.join(path, "sold.csv")
 # Storing the data of the .csv files in variables
 data_bought = pd.read_csv(path_to_file_bought)
 data_sold = pd.read_csv(path_to_file_sold)
-print(data_bought)
+# print(data_bought)
 
 # From data_bought (csv), create a list with the elements in the row (items)
 items_list = []
@@ -44,7 +44,7 @@ cal_storage = {
     'initial_amount': initial_amount_list
 }
 
-print(cal_storage)
+# print(cal_storage)
 in_storage_list = []
 for i in range(len(items_list)):
     initial = cal_storage["initial_amount"][i]
@@ -52,7 +52,7 @@ for i in range(len(items_list)):
     in_storogae = initial - total_expended
     in_storage_list.append(in_storogae)
 
-print(in_storage_list)
+# print(in_storage_list)
 
 
 def storage_data():
@@ -62,9 +62,14 @@ def storage_data():
         'sold': total_sold,
         'in storage': in_storage_list
     }
-    df = pd.DataFrame(dic_storage)
-    x = df.to_csv()
-    return (x)
+    # Convert the dictionary into DataFrame
+    df = pd.DataFrame(
+        data=dic_storage, columns=[
+            'item', 'initial amount', 'sold', 'in storage'])
+    pd.set_option('display.colheader_justify', 'center')
+
+    x = df.to_string(index=False)
+    return x
 
 
-print(storage_data())
+# print(storage_data())

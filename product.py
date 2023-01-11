@@ -47,7 +47,7 @@ class Product():
                          'count': [self.sold_yesterday],
                          'Buy price': [self.price],
                          'Expiration Day': [self.expiration_date]}
-        df = pd.DataFrame(dic_yesterday)
+        df = pd.DataFrame(data=dic_yesterday)
         x = df.to_csv()
         return (x)
 

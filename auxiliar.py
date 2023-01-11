@@ -9,3 +9,16 @@
     print(items_details(args.revenue_today).revenue())
     print(items_details(args.fresh_product).fresh_item())
 '''
+
+# trying to print csv
+'''
+    dic_storage = {
+        'item': items_list,
+        'initial amount': initial_amount_list,
+        'sold': total_sold,
+        'in storage': in_storage_list
+    }
+    df = pd.DataFrame(
+        data=dic_storage, columns=[
+            'item', 'initial amount', 'sold', 'in storage'])
+'''

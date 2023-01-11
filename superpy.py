@@ -3,7 +3,9 @@ import argparse
 '''import csv'''  # I will use Pandas instead
 import pandas as pd  # Easier way to import and work with .csv files
 import os
+import sys
 import product
+import all_products_data
 
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
@@ -12,10 +14,25 @@ __human_name__ = "superpy"
 
 # Your code below this line.
 def main():
+    msg_items_bought = "Type <-b> in order to check all bought itmes data:\n"
+    msg_items_sold = "Type <-s> in order to check all bought itmes data:\n"
+    msg_storage_update = "Type <-u> in order to check all bought itmes data:\n"
+    msg = msg_items_bought + msg_items_sold + msg_storage_update
+
+    print(msg)
+    inp = input("Type <-b> in order to check all bought itmes data:\n")
+    if inp == '-b':
+        print(data_bought)
+    elif inp == '-s':
+        print(data_sold)
+    elif inp == '-u':
+        print(all_products_data.storage_data())
+
     # print('BOUGHT \n:', data_bought)
     # print('SOLD \n:', data_sold)
-    print(product.items_details('orange'))
-    print(product.items_details('graves'))
+    # print(product.items_details('orange'))
+    # print(product.items_details('graves'))
+    # print(all_products_data.storage_data())
 
 
 path = os.getcwd()
@@ -49,11 +66,11 @@ args = argParser.parse_args()
 
 
 # Storing the data of the .csv files in variables
-data_bought = pd.read_csv(path_to_file_bought)
-data_sold = pd.read_csv(path_to_file_sold)
+data_bought = pd.read_csv(path_to_file_bought, index_col=False)
+pd.set_option('display.colheader_justify', 'center')
 
-# create a class to storage all the data from the csv
-
+data_sold = pd.read_csv(path_to_file_sold, index_col=False)
+pd.set_option('display.colheader_justify', 'center')
 
 if __name__ == "__main__":
     main()
