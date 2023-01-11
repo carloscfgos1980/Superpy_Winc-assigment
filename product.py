@@ -39,7 +39,7 @@ class Product():
     def total_sold(self):
         x = sum([self.sold_before_yesterday,
                 self.sold_yesterday, self.sold_today])
-        return x
+        return f'Total: {x}'
 
     # subclass inventory yesterday
     def inventory_yesterday(self):
@@ -48,7 +48,8 @@ class Product():
                          'Buy price': [self.price],
                          'Expiration Day': [self.expiration_date]}
         df = pd.DataFrame(data=dic_yesterday)
-        x = df.to_csv()
+        pd.set_option('display.colheader_justify', 'center')
+        x = df.to_string(index=False)
         return (x)
 
 
