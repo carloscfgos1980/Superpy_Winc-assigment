@@ -1,5 +1,3 @@
-# Imports
-'''import csv'''  # I will use Pandas instead
 from datetime import date
 import pandas as pd  # Easier way to import and work with .csv files
 import os
@@ -52,8 +50,7 @@ class Product():
         x = df.to_string(index=False)
         return (x)
 
-
-# subclass inventory today
+    # subclass inventory today
 
     def inventory_today(self):
         dic_today = {'item': [self.item],
@@ -61,13 +58,16 @@ class Product():
                      'Buy price': [self.price],
                      'Expiration Day': [self.expiration_date]}
         df = pd.DataFrame(dic_today)
-        x = df.to_csv()
+        pd.set_option('display.colheader_justify', 'center')
+        x = df.to_string(index=False)
         return (x)
 
     # Subclass inventory. What it remains in the storage
     def in_storage(self):
-        y = self.amount - self.total_sold()
-        return y
+        x = sum([self.sold_before_yesterday,
+                 self.sold_yesterday, self.sold_today])
+        y = self.amount - x
+        return f" there is {y} kgs of {self.item} in storage"
 
     # Subclass Calculte revenue
     def revenue(self, date):
@@ -75,17 +75,19 @@ class Product():
             cost = self.sold_before_yesterday * self.price
             collected = self.sold_before_yesterday * self.sell_price
             outcome = collected - cost
-            return outcome
+            return f"Reveue from before yesterday is {outcome} euros"
         elif date == 'yesterday':
             cost = self.sold_yesterday * self.price
             collected = self.sold_yesterday * self.sell_price
             outcome = collected - cost
-            return outcome
-        else:
+            return f"Reveue from yesterday is {outcome} euros"
+        elif date == 'today':
             cost = self.sold_today * self.price
             collected = self.sold_today * self.sell_price
             outcome = collected - cost
-            return outcome
+            return f"Reveue from before today is {outcome} euros"
+        else:
+            return 'Error. oops something went wrong'
 
     # Subclass Check if the product is still fresh
     def fresh_item(self):

@@ -1,4 +1,3 @@
-from datetime import date
 import pandas as pd  # Easier way to import and work with .csv files
 import os
 
@@ -13,7 +12,7 @@ data_sold = pd.read_csv(path_to_file_sold)
 # print(data_bought)
 
 # From data_bought (csv), create a list with the elements in the row (items)
-items_list = []
+items_list = []  # This is used in Error return in superpy.py so I need to imported there
 for index, row in data_bought.iterrows():
     x = row["items"]
     items_list.append(x)
@@ -24,6 +23,7 @@ for index, row in data_bought.iterrows():
     x = row["amount_kg"]
     initial_amount_list.append(x)
 
+# Get the values of the columns of sold products and calculate the total sold
 before_yesterday_list = []
 yesterday_list = []
 today_list = []
@@ -34,17 +34,15 @@ for i in range(len(items_list)):
     yesterday = data_sold.values[i][4]
     yesterday_list.append(yesterday)
     today = data_sold.values[i][5]
-    total = sum([before_yesterday, yesterday, today])
+    total = sum([before_yesterday, yesterday, today])  # getting total sold
     total_sold.append(total)
 
-# built a dictionary to calculate de amount of items in storage
-
+# Built a dictionary to calculate de amount of items in storage
 cal_storage = {
     'sold': total_sold,
     'initial_amount': initial_amount_list
 }
-
-# print(cal_storage)
+# Calculate the amount of items in Storage
 in_storage_list = []
 for i in range(len(items_list)):
     initial = cal_storage["initial_amount"][i]
@@ -52,7 +50,7 @@ for i in range(len(items_list)):
     in_storogae = initial - total_expended
     in_storage_list.append(in_storogae)
 
-# print(in_storage_list)
+# get a DataFrame that shos all the items in storage
 
 
 def storage_data():
@@ -66,10 +64,7 @@ def storage_data():
     df = pd.DataFrame(
         data=dic_storage, columns=[
             'item', 'initial amount', 'sold', 'in storage'])
-    pd.set_option('display.colheader_justify', 'center')
+    pd.set_option('display.colheader_justify', 'center')  # format align center
 
-    x = df.to_string(index=False)
+    x = df.to_string(index=False)  # decapricate the index in the output doc
     return x
-
-
-# print(storage_data())

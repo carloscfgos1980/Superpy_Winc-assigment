@@ -3,7 +3,6 @@ import argparse
 '''import csv'''  # I will use Pandas instead
 import pandas as pd  # Easier way to import and work with .csv files
 import os
-import sys
 import product
 import all_products_data
 
@@ -15,57 +14,90 @@ __human_name__ = "superpy"
 # Your code below this line.
 def main():
     msg_items_bought = "Type <-B> in order to check all bought itmes data:\n"
-    msg_items_sold = "Type <-S> in order to check all bought itmes data:\n"
-    msg_storage_update = "Type <-U> in order to check all bought itmes data:\n"
-    msg_item = "Type <-i> for all item data:\n"
-    msg_inventory_yesterday = "Type<-y> to check the inventory from yesterday:\n"
-    msg_inventory_today = "Type<-t> to check the inventory from today:\n"
-    msg_item_storage = "Type<-s> to check the amount of item in the storage:\n"
-    msg_revenue_before_yesterday = "Type<-r2> to check the revenue from before yesterday:\n"
-    msg_revenue_yesterday = "Type<-r1> to check the revenue from yesterday:\n"
-    msg_revenue_today = "Type<-r> to check the revenue from before today:\n"
-    msg_fresh_item = "Type<-f> to check if the item is not outdated:\n"
+    msg_items_sold = "Type <-S> in order to check all sold itmes data:\n"
+    msg_storage_update = "Type <-U> in order to check all itmes data in storage:\n"
+    # message with command line explanation to get general data
+    msg = msg_items_bought + msg_items_sold + msg_storage_update
 
-    msg = msg_items_bought + msg_items_sold + msg_storage_update + msg_item + msg_inventory_yesterday + \
-        msg_inventory_today + msg_item_storage + \
-        msg_revenue_before_yesterday + msg_revenue_yesterday + \
-        msg_revenue_yesterday + msg_revenue_today + msg_fresh_item
-    # print(product.items_details('orange').inventory_yesterday())
-    print(product.items_details(args.item))
+    # Need to implement a condiction to avoid the argsparse error
+    if args.yesterday:
+        try:
+            print(product.items_details(args.yesterday).inventory_yesterday())
+        except AttributeError:  # This avoid the error when a non-existance item is typed
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.today:
+        try:
+            print(product.items_details(args.today).inventory_today())
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.storage:
+        try:
+            print(product.items_details(args.storage).in_storage())
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.revenue_before_yesterday:
+        try:
+            print(product.items_details(args.revenue_before_yesterday).revenue(
+                'before_yesterday'))
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.revenue_yesterday:
+        try:
+            print(product.items_details(args.revenue_yesterday).revenue(
+                'yesterday'))
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.revenue_today:
+        try:
+            print(product.items_details(args.revenue_today).revenue(
+                'today'))
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.fresh_product:
+        try:
+            print(product.items_details(args.fresh_product).fresh_item())
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
+    elif args.item:
+        print(product.items_details(args.item))
+    else:
+        print(msg)
+        inp = input("Type one command:\n")
+        if inp == '-B':
+            print(data_bought)
+        elif inp == '-S':
+            print(data_sold)
+        elif inp == '-U':
+            print(all_products_data.storage_data())
 
-    print(product.items_details(args.yesterday).inventory_yesterday())
-    '''
-    print(product.items_details(args.today).inventory_today())
-    print(product.items_details(args.storage).in_storage())
-    print(product.items_details(args.revenue_before_yesterday).revenue(
-        'before_yesterday'))
-    print(product.items_details(args.revenue_yesterday).revenue(
-        'yesterday'))
-    print(product.items_details(args.revenue_today).revenue(
-        'today'))
-    print(product.items_details(args.fresh_product).fresh_item())
-    '''
-    print(msg)
-    inp = input("Type one command:\n")
-    if inp == '-B':
-        print(data_bought)
-    elif inp == '-S':
-        print(data_sold)
-    elif inp == '-U':
-        print(all_products_data.storage_data())
 
-    # print('BOUGHT \n:', data_bought)
-    # print('SOLD \n:', data_sold)
-    print(product.items_details('orange'))
-    print(product.items_details('graves'))
-    print(product.items_details('orange').total_sold)
-    # print(all_products_data.storage_data())
-
-
+# getting path
 path = os.getcwd()
 path_to_file_bought = os.path.join(path, "bought.csv")
 path_to_file_sold = os.path.join(path, "sold.csv")
 
+# Storing the data of the .csv files in variables
+data_bought = pd.read_csv(path_to_file_bought, index_col=None)
+pd.set_option('display.colheader_justify', 'center')
+
+data_sold = pd.read_csv(path_to_file_sold, index_col=None)
+pd.set_option('display.colheader_justify', 'center')
+
+# Args parse allows me to pass the parameter from the command line
 argParser = argparse.ArgumentParser(
     prog='My Program',
     description='Manage the inventory of the store',
@@ -73,31 +105,25 @@ argParser = argparse.ArgumentParser(
 
 # Parse arguments
 argParser.add_argument(
-    "-i", "--item", help="input an item")
+    "-i", "--item", type=str, help="input an item")
 argParser.add_argument(
-    "-y", "--yesterday", help="inventory yesterday")
+    "-y", "--yesterday", type=str, help="inventory yesterday")
 argParser.add_argument(
-    "-t", "--today", help="inventory today")
+    "-t", "--today", type=str, help="inventory today")
 argParser.add_argument(
-    "-s", "--storage", help="Storage")
+    "-s", "--storage", type=str, help="Storage")
 argParser.add_argument(
-    "-r2", "--revenue_before_yesterday", help="Revenues before yesterday")
+    "-r2", "--revenue_before_yesterday", type=str, help="Revenues before yesterday")
 argParser.add_argument(
-    "-r1", "--revenue_yesterday", help="Revenues yesterday")
+    "-r1", "--revenue_yesterday", type=str, help="Revenues yesterday")
 argParser.add_argument(
-    "-r", "--revenue_before_today", help="Revenues before today")
+    "-r", "--revenue_today", type=str, help="Revenues before today")
 argParser.add_argument(
-    "-f", "--fresh_product", help="Type an item to check if it is not outdated")
+    "-f", "--fresh_product", type=str, help="Type an item to check if it is not outdated")
 
-args = argParser.parse_args()
+# This I will use for the argsparse
+args = argParser.parse_args()  # Example args.item
 
-
-# Storing the data of the .csv files in variables
-data_bought = pd.read_csv(path_to_file_bought, index_col=False)
-pd.set_option('display.colheader_justify', 'center')
-
-data_sold = pd.read_csv(path_to_file_sold, index_col=False)
-pd.set_option('display.colheader_justify', 'center')
 
 if __name__ == "__main__":
     main()
