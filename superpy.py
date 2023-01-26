@@ -72,6 +72,13 @@ def main():
             print(
                 f"We don't have this product. You should try: \n{all_products_data.items_list}")
             return True
+    elif args.item and args.quantity:
+        try:
+            print(product.items_details(args.item).order_produt(args.quantity))
+        except AttributeError:
+            print(
+                f"We don't have this product. You should try: \n{all_products_data.items_list}")
+            return True
     elif args.item:
         print(product.items_details(args.item))
     else:
@@ -106,6 +113,8 @@ argParser = argparse.ArgumentParser(
 # Parse arguments
 argParser.add_argument(
     "-i", "--item", type=str, help="input an item")
+argParser.add_argument(
+    "-q", "--quantity", type=float, help="input an quanty of the desireable item")
 argParser.add_argument(
     "-y", "--yesterday", type=str, help="inventory yesterday")
 argParser.add_argument(
