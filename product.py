@@ -100,8 +100,19 @@ class Product():
         else:
             return f'{self.item} has expired'
 
+    def order_produt(self, quantity):
+        total_sold = sum([self.sold_before_yesterday,
+                          self.sold_yesterday, self.sold_today])
+        total_instorage = self.amount - total_sold
 
-# From data_bought (csv), create a list with the elements in the row (items)
+        if quantity <= total_instorage:
+            outcome = total_instorage - quantity
+            price = outcome * self.sell_price
+            return f"you can buy {quantity} kgs of {self.item}for $ {price}.\nThere is {outcome} Kgs left in Storage"
+        return f"Sorry we cannot sell you {self.item}.\nYou request is larger than our storage, We only have {total_instorage} kgs in storage"
+
+
+ # From data_bought (csv), create a list with the elements in the row (items)
 items_list = []
 for index, row in data_bought.iterrows():
     x = row["items"]
@@ -119,3 +130,6 @@ def items_details(item):
                 return product
     else:
         return f"{item} is not in inventory, you should try:\n{items_list}"
+
+
+# print(items_details("orange").order_produt(40))
